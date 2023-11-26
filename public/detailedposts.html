@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CareerConnect</title>
+
+    <link rel="stylesheet" type="text/css" href="css/detailsstyle.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;1,500&family=Roboto:ital,wght@0,300;1,300;1,700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    
+    <header>
+        <a href="#" class="logo">CareerConnect</a>
+
+        <ul class="navlist">
+            <li><a href="#" onclick="movetohome()">Home</a></li>
+            <li><a href="#" class="postjobs" onclick="movetopost()">Post A Job</a></li>
+            <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+
+        <div class="bx bx-menu" id="menu-icon"></div>
+    </header>
+
+    <div class="container">
+        <div class="completedata">
+        </div>
+        <br><br>
+        <div class="applicantdata"></div>
+    </div>
+
+    <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    const myid = urlParams.get('jobid');
+
+    function movetohome(){
+        window.location.href = `emphomepage.html?email=${email}`;
+    }
+    function movetopost(){
+    window.location.href = `makepost.html?email=${email}`;
+}
+
+
+
+    let menu = document.querySelector('#menu-icon');
+let navlist = document.querySelector('.navlist');
+
+menu.onclick = () => {
+    menu.classList.toggle('bx-x');
+    navlist.classList.toggle('open');
+};
+
+function movetopost(){
+    window.location.href = `makepost.html?email=${email}`;
+}
+
+const logout = async () => {
+    try {
+      const response = await fetch('/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.text();
+
+      alert(result);
+      window.location.href = '/loginpg.html';
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+
+    console.log(`sending email and id to backend`,myid);
+    const response = await fetch(`/getDatails?email=${email}&jobid=${myid}`, {
+    method: 'GET',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    });
+        const detailedData = await response.json();
+
+        const jobsContainer = document.querySelector('.completedata');
+        jobsContainer.innerHTML = '<h2>Your Job Details</h2>';
+
+        const jobItem = document.createElement('div');
+        jobItem.classList.add('post-item');
+        jobItem.innerHTML = `
+        <div class="fulldetails">
+            <h3><b>Job Title: </b>${detailedData.jobTitle}</a></h3>
+            <p>Location: ${detailedData.location}</p>
+            <p>Workplace Type: ${detailedData.workplaceType}</p>
+            <p>Employment Type: ${detailedData.employmentType}</p>
+            <p>Job Description: ${detailedData.jobDescription}</p>
+            <p>Required Skills: ${detailedData.requiredSkills}</p>
+
+            <button onclick="getapplicantdata()">View All Applicants</button>
+            <button onclick="deletepost()">Delete Post</button>
+            </div>
+      `;
+
+      jobsContainer.appendChild(jobItem);
+    });
+
+    function getapplicantdata(){
+
+        console.log('Clicked the button');
+    fetch(`/getapplicants?jobsid=${myid}&memail=${email}`, { 
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(result => {
+            const applicantsContainer = document.querySelector('.applicantdata');
+
+            if(result === "No Records found"){
+    applicantsContainer.innerHTML = '<h2>No Record Found</h2>';
+    return
+    console.log(result);}
+
+            applicantsContainer.innerHTML = '<h2>Applicants: </h2>';
+            result.forEach(applicant => {
+                const applicantItem = document.createElement('div');
+                applicantItem.classList.add('applicant-item');
+                const base64String = applicant.userbase;
+                applicantItem.innerHTML = `
+                    <p><b>Applicant Name: </b>${applicant.username}</p>
+                    <p><b>Applied Date: </b>${applicant.appdate}</p>
+                    <p><b>Email: </b>${applicant.useremail}</p>
+                    <p><b>Qualification: </b>${applicant.userqualification}</p>
+                    <p><b> Cover Letter: </b>${applicant.coverletter}</p>
+                    <button onclick="base64ToPDF('${base64String}', '${applicant.username}.pdf')">Download Resume</button>
+                `;
+
+                applicantsContainer.appendChild(applicantItem);
+            });
+        })
+        .catch(error => {
+            console.error('Error getting applicants data:', error);
+        });        
+    }
+
+    function base64ToPDF(base64String, fileName) {
+    const byteCharacters = atob(base64String);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: 'application/pdf' });
+
+    const link = document.createElement('a');
+    link.href = window.URL.createObjectURL(blob);
+    link.download = fileName || 'download.pdf';
+    link.click();
+}
+    function deletepost(){
+        var confirmCancel = window.confirm("Are you sure you want to delete this post?");
+            if (confirmCancel == true) {
+
+                fetch(`/deleteJob?jobsid=${myid}&memail=${email}`, { 
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => response.json())
+        .then(result => {
+            if(result === "No details found"){
+                alert("Error occured, Try again later.");
+                window.location.href = `emphomepage.html?email=${email}`;
+
+            }
+            else{
+                alert("Post Deleted");
+                window.location.href = `emphomepage.html?email=${email}`;
+
+            }
+        })
+        .catch(error => {
+            console.error('Error getting applicants data:', error);
+        });        
+            return false;
+            } else {
+                alert('Post not Deleted');
+                return false;
+            }
+    }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CareerConnect </title>
+    <link rel="stylesheet" type="text/css" href="css/emphomepagestyle.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;1,500&family=Roboto:ital,wght@0,300;1,300;1,700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body>
+    
+    <header>
+        <a href="#" class="logo">CareerConnect</a>
+
+        <ul class="navlist">
+            <li><a href="#" class="home">Home</a></li>
+            <li><a href="#" onclick="movetopost()" class="postjobs">Post A Job</a></li>
+            <li><a href="#" onclick="logout()">Logout</a></li>
+        </ul>
+
+        <div class="bx bx-menu" id="menu-icon"></div>
+    </header>
+
+    <div class="container">
+    <div class="myposts">
+        <h2>Available Jobs</h2>
+        <div class="post-item">
+
+        </div>
+    </div>
+</div>
+
+
+
+    
+</body>
+<script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+
+
+    let menu = document.querySelector('#menu-icon');
+let navlist = document.querySelector('.navlist');
+
+menu.onclick = () => {
+    menu.classList.toggle('bx-x');
+    navlist.classList.toggle('open');
+};
+
+function movetopost(){
+    window.location.href = `makepost.html?email=${email}`;
+}
+
+const logout = async () => {
+    try {
+      const response = await fetch('/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.text();
+
+      alert(result);
+      window.location.href = '/loginpg.html';
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
+
+</script>
+<script>
+
+
+    document.addEventListener('DOMContentLoaded', async () => {
+    const response = await fetch('/getAllposts');
+    const allJobs = await response.json();
+
+    const jobsContainer = document.querySelector('.myposts');
+    jobsContainer.innerHTML = `<h2>Your Job Postings</h2
+                                <p>Click on Job Title for more details</p><br><br>`;
+    
+    if (allJobs.message === "No Records found") {
+        const noJobsMessage = document.createElement('div');
+        noJobsMessage.classList.add('job-item');
+        noJobsMessage.innerHTML = '<h3>Showcase your company\'s exciting career opportunities and attract top talent</h3><h2>Post your first job today.</h2>';
+        jobsContainer.appendChild(noJobsMessage);
+    }
+
+
+    allJobs.forEach((job) => {
+      const jobItem = document.createElement('div');
+      jobItem.classList.add('post-item');
+      jobItem.innerHTML = `
+      <div id="main-details-${job._id}">
+              <h3><b>Job Title: </b><a onclick="viewpost('${job._id}')">${job.jobTitle}</a></h3>
+              <h5>Date Posted:${job.postedDate} </h5>
+              <p>Location: <b>${job.location}</b></p>
+              <p>Workplace Type: <b>${job.workplaceType}</b></p>
+              <p>Employment Type: <b>${job.employmentType}</b></p>
+              </div>
+      `;
+
+      jobsContainer.appendChild(jobItem);
+    });
+  });
+  function viewpost(jobId) {
+    window.location.href = `detailedposts.html?email=${email}&jobid=${jobId}`;
+  }
+</script>
+</html>

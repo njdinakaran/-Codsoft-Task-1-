@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Verification</title>
+</head>
+<body>
+  <h1>Email Verification</h1>
+  <p>Please enter your email address to verify:</p>
+  <form>
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required>
+    <button type="button" onclick="verifyuser()">Verify</button>
+  </form>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+            verificationid = urlParams.get('token');
+    function verifyuser(){
+        var useremailid =document.getElementById('email').value;
+        console.log(useremailid, verificationid);
+        if(email === ''){
+            alert("Please enter your email address");
+        }else{
+
+            var verifydata={
+                email: useremailid,
+                code: verificationid,
+            };
+            fetch('/verify', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(verifydata)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if(result === "No user Found"){
+                alert("User Not Found. Please enter a valid Email Id.");
+            }
+            else if(result === "Already verified"){
+                alert("Email id verified already.")
+            }
+            else if(result === "Invalid Token"){
+                alert("Invalid verification Code, Please contact support.");
+            }
+            else{
+                alert("Verification Completed");
+            }
+        })
+        .catch(error => {
+            console.error('myerror',error);
+        });
+        }
+
+    }
+  </script>
+
+</body>
+</html>

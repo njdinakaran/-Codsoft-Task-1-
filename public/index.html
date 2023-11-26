@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CareerConnect</title>
+
+    <link rel="stylesheet" type="text/css" href="css/indexstyle.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;1,500&family=Roboto:ital,wght@0,300;1,300;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+
+<body>
+    <header>
+        <a href="#" class="logo">CareerConnect</a>
+        <ul class="navlist">
+            <li><a href="#" class="login">Login</a></li>
+            <li><a href="#" class="postjob">Post A job</a></li>
+        </ul>
+        <div class="bx bx-menu" id="menu-icon"></div>
+    </header>
+    <section class="hero">
+        <div class="hero-text">
+            <h1>Connect with Your Future Career Today</h1>
+            <br>
+            <h3 class="texttwo">Find the latest job openings and career advice on CareerConnect</h3>
+            <h3>CareerConnect is your one-stop shop for finding your dream job. Connect with companies and recruiters directly on CareerConnect, find the latest job openings, and get career advice from experts.  <i class="fa-solid fa-suitcase" style="color: #cbd0d7;"></i></h3>
+            <a href="#">Upload Resume</a>
+        </div>
+
+        <div class="hero-img">
+            <img src="img/joblogo.png">
+        </div>
+    </section>
+
+<script src="https://unpkg.com/scrollreveal"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.querySelector("li:nth-of-type(1) a").addEventListener("click", function() {
+                window.location.href="loginpg.html";
+            });
+
+            document.querySelector("li:nth-of-type(2) a").addEventListener("click", function() {
+                window.location.href="newemp.html";
+            });
+
+            document.querySelector(".hero-text a").addEventListener("click", function() {
+                window.location.href="newemp.html?user=candidate";
+            });
+        });
+    </script>
+    <script src="https://unpkg.com/scrollreveal"></script>
+    <script src="js/indexscript.js"></script>
+    <script>
+        const sr = ScrollReveal ({
+    distance: '65px',
+    duration: 2000,
+    delay: 450,
+    reset: true
+});
+
+sr.reveal('.hero-text',{delay:200, origin:'top'})
+sr.reveal('.hero-img',{delay:400, origin:'top'})
+
+
+    </script>
+</body>
+</html>

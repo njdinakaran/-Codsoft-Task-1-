@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CareerConnect - Homepage</title>
+
+    <link rel="stylesheet" type="text/css" href="css/candistyle.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;1,500&family=Roboto:ital,wght@0,300;1,300;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+    
+</head>
+
+<body>
+    
+  <header>
+    <a href="#" class="logo">CareerConnect</a>
+
+    <ul class="navlist">
+        <li><a href="#" class="home">Home</a></li>
+        <li><a href="#" onclick="movetoview()" class="yourapplications">View Applications</a></li>
+        <li><a href="#" class="leave" onclick="logout()">Logout</a></li>
+    </ul>
+
+    <div class="bx bx-menu" id="menu-icon"></div>
+  </header>
+   
+    <div class="container">
+        <div class="filters">
+            <h2>Filters</h2>
+            <label for="search">Search:</label>
+            <input type="text" id="search" name="search" placeholder="Enter keywords for job title">
+
+            <div class="myhfilter">
+            <label for="workplaceType" id="workplaceTypeid">Workplace Type:</label>
+            <select id="workplaceType" name="workplaceType">
+              <option value="all">-</option>
+                <option value="on-site">On-Site</option>
+                <option value="remote">Remote</option>
+                <option value="hybrid">Hybrid</option>
+            </select>
+
+            <label for="employmentType" id="employmentTypeid">Employment Type:</label>
+            <select id="employmentType" name="employmentType">
+              <option value="all">-</option>
+                <option value="Full-Time">Full-Time</option>
+                <option value="Part-Time">Part-Time</option>
+                <option value="Contract">Contract</option>
+                <option value="Temporary">Temporary</option>
+                <option value="Volunteer">Volunteer</option>
+                <option value="Internship">Internship</option>
+            </select>
+
+            <label for="skill" id="skillid">Skill:</label>
+            <input type="text" id="skill" name="skill" placeholder="Enter skills">
+
+            <label for="location" id="locationid">Location:</label>
+            <input type="text" id="location" name="location" placeholder="Enter location">
+          </div>
+            <button onclick="filterJobs()">Apply Filters</button>
+            <span id="more-filters" onclick="toggleMoreFilters()">More Filters</span>
+
+        </div>
+
+        <div class="jobs">
+            <h2>Available Jobs</h2>
+            <div class="job-item">
+                
+            </div>
+        </div>
+    </div>
+
+    <script>
+      const logout = async () => {
+    try {
+      const response = await fetch('/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.text();
+
+      alert(result);
+      window.location.href = '/loginpg.html';
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+  function movetoview(){
+  const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+    window.location.href = `viewallapplications.html?email=${email}`;
+}
+
+
+
+
+    document.addEventListener('DOMContentLoaded', async () => {
+    const response = await fetch('/getAllJobs');
+    const allJobs = await response.json();
+
+    const jobsContainer = document.querySelector('.jobs');
+    jobsContainer.innerHTML = '<h2>Available Jobs</h2>';
+
+    allJobs.forEach((job) => {
+      const jobItem = document.createElement('div');
+      jobItem.classList.add('job-item');
+      jobItem.innerHTML = `
+      <div id="main-details-${job._id}">
+              <h3><b>Job Title: </b>${job.jobTitle}</h3>
+              <h5>Date:${job.postedDate} </h5>
+              <p id="mycname">Company:  ${job.companyName}</p>
+              <p>Location:   ${job.location}</p>
+              <p>Workplace Type:   ${job.workplaceType}</p>
+              </div>
+        <div id="details-${job._id}" style="display: none;">
+          <p>Employment Type: ${job.employmentType}</p>
+          <p>Job Description: ${job.jobDescription}</p>
+          <p>Required Skills: ${job.requiredSkills}</p>
+        </div>
+        <div class="button-container">
+          <button onclick="viewDetails('${job._id}')">View Full Details</button>
+          <button id="apply-btn-${job._id}" class="send-application-btn" style="display: none;" onclick="toggleApplySection('${job._id}')">Apply    <i class="fa-regular fa-paper-plane"></i></button>
+        </div>
+        <div class="apply-section" id="apply-section-${job._id}" style="display: none;">
+            <label for="coverLetter-${job._id}">Cover Letter:</label>
+            <textarea id="coverLetter-${job._id}" name="coverLetter" placeholder="Write your cover letter"></textarea>
+            <button onclick="submitApplication('${job._id}')">Submit Application</button>
+        </div>
+      `;
+
+      jobsContainer.appendChild(jobItem);
+    });
+  });
+
+  function viewDetails(jobId) {
+    const detailsContainer = document.getElementById(`details-${jobId}`);
+    const applyBtn = document.getElementById(`apply-btn-${jobId}`);
+    const viewDetailsBtn = document.querySelector(`#main-details-${jobId} button`);
+
+
+    detailsContainer.style.display = detailsContainer.style.display === 'none' ? 'block' : 'none';
+    applyBtn.style.display = applyBtn.style.display === 'none' ? 'block' : 'none';
+    
+
+  }
+  function toggleApplySection(jobId) {
+    const applySection = document.getElementById(`apply-section-${jobId}`);
+    applySection.style.display = applySection.style.display === 'none' ? 'block' : 'none';
+
+  }
+    function filterJobs() {
+    const searchKeyword = document.getElementById('search').value;
+    const workplaceType = document.getElementById('workplaceType').value;
+    const employmentType = document.getElementById('employmentType').value;
+    const skill = document.getElementById('skill').value;
+    const location = document.getElementById('location').value;
+
+    fetch('/getAllJobs')
+      .then((response) => response.json())
+      .then((allJobs) => {
+        const filteredJobs = allJobs.filter((job) => {
+          const titleMatches = job.jobTitle.toLowerCase().includes(searchKeyword.toLowerCase());
+          const workplaceTypeMatches = workplaceType === 'all' || job.workplaceType === workplaceType;
+          const employmentTypeMatches = employmentType === 'all' || job.employmentType === employmentType;
+          const skillMatches = job.requiredSkills.toLowerCase().includes(skill.toLowerCase());
+          const locationMatches = job.location.toLowerCase().includes(location.toLowerCase());
+
+          return titleMatches && workplaceTypeMatches && employmentTypeMatches && skillMatches && locationMatches;
+        });
+
+        const jobsContainer = document.querySelector('.jobs');
+    jobsContainer.innerHTML = '<h2>Available Jobs</h2>';
+
+        if (filteredJobs.length > 0) {
+          const filterText = `Filters Applied: ${searchKeyword ? `Search - ${searchKeyword},` : ''} 
+                               ${workplaceType !== 'all' ? `Workplace Type - ${workplaceType},` : ''} 
+                               ${employmentType !== 'all' ? `Employment Type - ${employmentType},` : ''} 
+                               ${skill ? `Skill - ${skill},` : ''} 
+                               ${location ? `Location - ${location}` : ''}`;
+
+          const filterTextElement = document.createElement('p');
+          filterTextElement.textContent = filterText;
+          jobsContainer.appendChild(filterTextElement);
+
+          filteredJobs.forEach((job) => {
+            const jobItem = document.createElement('div');
+            jobItem.classList.add('job-item');
+            jobItem.innerHTML = `
+            <div id="main-details-${job._id}">
+              <h3><b>Job Title: </b>${job.jobTitle}</h3>
+              <h5>Date:${job.postedDate} </h5>
+              <p id="mycname">Company:  ${job.companyName}</p>
+              <p>Location:   ${job.location}</p>
+              <p>Workplace Type:   ${job.workplaceType}</p>
+              </div>
+        <div id="details-${job._id}" style="display: none;">
+          <p>Employment Type: ${job.employmentType}</p>
+          <p>Job Description: ${job.jobDescription}</p>
+          <p>Required Skills: ${job.requiredSkills}</p>
+        </div>
+        <div class="button-container">
+          <button onclick="viewDetails('${job._id}')">View Full Details</button>
+          <button id="apply-btn-${job._id}" class="send-application-btn" style="display: none;" onclick="toggleApplySection('${job._id}')">Apply    <i class="fa-regular fa-paper-plane"></i></button>
+        </div>
+        <div class="apply-section" id="apply-section-${job._id}" style="display: none;">
+            <label for="coverLetter-${job._id}">Cover Letter:</label>
+            <textarea id="coverLetter-${job._id}" name="coverLetter" placeholder="Write your cover letter"></textarea>
+            <button onclick="submitApplication('${job._id}')">Submit Application</button>
+        </div>
+            `;
+            jobsContainer.appendChild(jobItem);
+          });
+        } else {
+          const noJobsMessage = document.createElement('p');
+          noJobsMessage.textContent = 'No jobs found.';
+          jobsContainer.appendChild(noJobsMessage);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching jobs:', error);
+      });
+  }
+
+      function submitApplication(jobId) {
+  const coverLetter = document.getElementById(`coverLetter-${jobId}`).value;
+
+  if(coverLetter==""){
+    alert('Please fill cover letter');
+    return;
+  }
+
+  const companyName = document.querySelector(`#main-details-${jobId} #mycname`).textContent.replace('Company: ', ''); // Extracting company name
+  const jobTitle = document.querySelector(`#main-details-${jobId} h3`).textContent.replace('Job Title: ', ''); // Extracting job title
+
+  var mydata = {
+    jobId: jobId,
+    coverLetter: coverLetter,
+    companyName: companyName,
+    jobTitle: jobTitle
+  };
+
+  // console.log(`kkkdkdkd`,mydata);
+
+  // console.log(`papapapapap`,mydata);
+
+  fetch('/submitjobApplications', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(mydata)
+  })
+    .then((response) => response.text())
+    .then((data) => {
+      console.log(data);
+      console.log(`email from backend`,data);
+
+
+      alert(data);
+      location.reload();
+    })
+    .catch((error) => {
+      console.error('Error submitting application:', error);
+      alert('Error occured, Try again later')
+    });
+}
+
+function toggleMoreFilters() {
+  const filtersContainer = document.querySelector('.filters');
+  const moreFiltersText = document.getElementById('more-filters');
+
+  filtersContainer.classList.toggle('show-more-filters');
+  if (filtersContainer.classList.contains('show-more-filters')) {
+    moreFiltersText.textContent = 'Hide Filters';
+  } else {
+    moreFiltersText.textContent = 'More Filters';
+  }
+}
+
+    </script>
+        <script src="js/indexscript.js"></script>
+
+        
+</body>
+</html>

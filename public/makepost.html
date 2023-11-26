@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post a New Job</title>
+    
+    <link rel="stylesheet" type="text/css" href="css/makestyle.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;1,500&family=Roboto:ital,wght@0,300;1,300;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script>
+        var useremail="";
+        document.addEventListener("DOMContentLoaded", function () {
+            const urlParams = new URLSearchParams(window.location.search);
+            useremail = urlParams.get('email');
+            if (email) {
+                const emailInput = document.getElementById("email");
+                emailInput.value = email;
+            }
+        });
+
+        
+        document.addEventListener("DOMContentLoaded", function() {
+            // console.log(`before fetch`,useremail);
+            fetch(`/getUserData?email=${useremail}`,{
+                method: 'GET',
+                headers: {
+                    'Content-Type' : 'application/json'
+                }
+            })
+        .then(response => response.json())
+        .then(data => {
+            // console.log(`i got data here`);
+            // console.log(data);
+            const companyNameInput = document.getElementById("companyName");
+            var cname = data.companyName;
+            cname=cname.toUpperCase();
+            companyNameInput.value = cname;  
+        })
+        .catch(error => {
+            console.log(error);
+        });
+
+    });
+    </script>
+
+
+
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">CareerConnect</a>
+    
+        <ul class="navlist">
+            <li><a href="#" class="home" onclick="movehome()">Home</a></li>
+            <li><a href="#" onclick="movetoview()" class="yourapplications">Post A Job</a></li>
+            <li><a href="#" class="leave" onclick="logout()">Logout</a></li>
+        </ul>
+    
+        <div class="bx bx-menu" id="menu-icon"></div>
+      </header>
+
+      <div class="container">
+        <form>
+            <h2>Post a New Job</h2>
+            <h5>Find qualified candidates you cant find elsewhere        </h5>
+
+            <label for="companyName">Company Name:</label>
+            
+            <input type="text" id="companyName" name="companyName" value="Your Company Name" readonly>
+            <input type="hidden" id="email" name="email" value="">
+
+            <label for="jobTitle">Job Title:</label>
+            <input type="text" id="jobTitle" name="jobTitle" required>
+
+            <label for="workplaceType">Workplace Type:</label>
+            <select id="workplaceType" name="workplaceType" required>
+                <option value="on-site">On-Site</option>
+                <option value="remote">Remote</option>
+                <option value="hybrid">Hybrid</option> 
+            </select>
+
+            <label for="location">Location:</label>
+            <input type="text" id="mylocation" name="mylocation" required>
+
+            <label for="employmentType">Employment Type:</label>
+            <select id="employmentType" name="employmentType" required>
+                <option value="Full-Time">Full-Time</option>
+                <option value="Part-Time">Part-Time</option>
+                <option value="Contract">Contract</option>
+                <option value="Temporary">Temporary</option>
+                <option value="Volunteer">Volunteer</option>
+                <option value="Internship">Internship</option>
+            </select>
+
+            <label for="jobDescription">Job Description:</label>
+            <textarea id="jobDescription" name="jobDescription" rows="4" required></textarea>
+
+            <label for="requiredSkills">Required Skills:</label>
+            <input type="text" id="requiredSkills" name="requiredSkills" required>
+
+            <button type="button" onclick="createjob()">Post Job</button>
+        </form>
+    </div>
+
+    <script>
+
+        function createjob(){
+
+        var myemail = useremail;
+        var comname =document.getElementById('companyName').value;
+        var myjobtitle=document.getElementById('jobTitle').value;
+        var myworkplace=document.getElementById('workplaceType').value;
+        var mylocation=document.getElementById('mylocation').value;
+        var myemptype=document.getElementById('employmentType').value;
+        var mydesc=document.getElementById('jobDescription').value;
+        var myskills=document.getElementById('requiredSkills').value;
+        if (comname === '' || myjobtitle === '' || myworkplace === '' || mylocation === '' || myemptype === '' || mydesc === '' || myskills === '') {
+    alert('Please fill in all fields before posting the job.');
+    return;
+  }
+
+        var jobdata = {
+            email: myemail,
+            companyName:comname,
+            jobTitle:myjobtitle,
+            workplaceType:myworkplace,
+            location:mylocation,
+            employmentType:myemptype,
+            jobDescription:mydesc,
+            requiredSkills:myskills
+        };
+        fetch('/submitjobDetails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(jobdata)
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log(data);
+            alert('Job Posted Successfully');
+            window.location.href = `/emphomepage.html?email=${useremail}`;
+        })
+        .catch(error => {
+            console.error('myerror',error);
+        });
+    }
+
+    function movehome(){
+        window.location.href = `emphomepage.html?email=${useremail}`;
+    }
+
+    const logout = async () => {
+    try {
+      const response = await fetch('/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.text();
+
+      alert(result);
+      window.location.href = '/loginpg.html';
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+    </script>
+    
+    <script src="js/indexscript.js"></script>
+
+</body>
+
+</html>

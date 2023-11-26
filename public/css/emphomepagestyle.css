@@ -1,0 +1,164 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: 'Times New Roman', Times, serif;
+    list-style: none;
+    text-decoration: none;
+}
+header{
+   position: absolute;
+   right: 5px;
+   left: 5px;
+   top: 10px;
+    text-align: center;
+   z-index: 1000;
+   width: 90%;
+   display:flex;
+   align-items: center;
+   justify-content: space-between;
+   padding: 25px 5%;
+   background: transparent;
+   border: 2px solid white;
+   border-radius: 8px;
+   margin: 0 auto; 
+   margin-bottom: 10px;
+}
+body{
+   background: linear-gradient(to left, #502F4C , #294D4A );
+}
+  
+.logo{
+  font-size: 35px;
+  font-weight: 750;
+  color: white;
+}
+.navlist{
+  display: flex;
+}
+.navlist a{
+  color: wheat;
+  margin-left: 65px;
+  font-size: 18px;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  transition: all .55s ease;
+}
+
+.navlist a:hover{
+    border-bottom: 3px solid white;
+}
+
+
+
+#menu-icon{
+    color: wheat;
+    font-size: 25px;
+    z-index: 10001;
+    cursor: pointer;
+    display: none;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 30px 5%;
+    width: 60%;
+    align-items: center;
+    margin-top: 100px;
+    margin-left: 17%;
+}
+.myposts {
+    width: 100%;
+    padding: 10px;
+    color: white;
+    
+}
+
+input[type="text"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.post-item {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.post-item h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: white;
+  }
+
+  .post-item h5{
+    font-size: 18px;
+    margin-bottom: 5px;
+    color: white;
+
+  }
+  
+  .post-item p {
+    font-size: 17px;
+    margin-bottom: 5px;
+    color: white;
+
+  }
+  .post-item a:hover{
+    border-bottom: 2px solid white;
+  }
+
+h2 {
+    margin-bottom: 20px;
+    color: white;
+}
+
+@media (max-width: 990px) {
+    #menu-icon {
+        display: block;
+    }
+    header{
+        position: fixed;
+    }
+    .navlist {
+        position: absolute;
+        top: 65%;
+        right: -100%; 
+        width:  300px;
+        height: 15vh;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        padding: 30px 20px;
+        transition: all 0.55s ease;
+    }
+    .navlist a {
+        margin-left: 0;
+        display: block;
+        margin: 3px 0;
+
+    }
+    .navlist.open {
+        right: -30%;
+    }
+    .container{
+        margin-top: 120px;
+        border: 2px solid rgba(255,255,255,.5);
+        border-radius: 20px;
+        backdrop-filter: blur(100px);
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 10px;
+    }
+}
+
+

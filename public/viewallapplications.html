@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CareerConnect </title>
+
+    <link rel="stylesheet" type="text/css" href="css/myapplicationstyle.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;1,500&family=Roboto:ital,wght@0,300;1,300;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+</head>
+
+<body>
+    
+  <header>
+    <a href="#" class="logo">CareerConnect</a>
+
+    <ul class="navlist">
+        <li><a href="#" class="home" onclick="movetohome()">Home</a></li>
+        <li><a href="#" >View Applications</a></li>
+        <li><a href="#" class="leave" onclick="logout()">Logout</a></li>
+    </ul>
+
+    <div class="bx bx-menu" id="menu-icon"></div>
+  </header>
+  <div class="jobs">
+    <h2>Applied Jobs</h2>
+    <div class="job-item">
+        
+    </div>
+</div>
+
+  <script>
+        const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email');
+
+
+    let menu = document.querySelector('#menu-icon');
+let navlist = document.querySelector('.navlist');
+
+menu.onclick = () => {
+    menu.classList.toggle('bx-x');
+    navlist.classList.toggle('open');
+};
+
+function movetohome(){
+  window.location.href = `candihomepage.html?email=${email}`;
+}
+  const logout = async () => {
+    try {
+      const response = await fetch('/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      const result = await response.text();
+
+      alert(result);
+      window.location.href = '/loginpg.html';
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+  };
+
+
+      
+document.addEventListener('DOMContentLoaded', async () => {
+    const response = await fetch('/getAllapplication');
+    const appliedJobs = await response.json();
+
+    const jobsContainer = document.querySelector('.jobs');
+    jobsContainer.innerHTML = '<h2>Applied Jobs</h2>'; 
+
+    if (appliedJobs.message === "No Records found") {
+        const noJobsMessage = document.createElement('div');
+        noJobsMessage.classList.add('job-item');
+        noJobsMessage.innerHTML = '<h3>No jobs applied yet.</h3>';
+        jobsContainer.appendChild(noJobsMessage);
+    }
+    else{
+      
+    const jobsContainer = document.querySelector('.jobs');
+    jobsContainer.innerHTML = '<h2>Applied Jobs</h2>';
+    appliedJobs.forEach((data) => {
+      const jobItem = document.createElement('div');
+    jobItem.classList.add('job-item');
+    jobItem.innerHTML = `
+      <div class="main-details">
+        <h3><b>Job Title: </b>${data.jtitle}</h3>
+        <h5><u>Applied Date: </u><b>${data.appliedDate}</b></h5>
+        <p id="mycname"><u>Company:</u> <b>${data.cname}</b></p>
+        <p><u>Location: </u><b>${data.jlocation}</b></p>
+        <p><u>Workplace Type: </u><b>${data.jtype}</b></p>
+        <p><u>Employment Type: </u><b>${data.jemptype}</b></p>
+        <p><u>Job Description: </u><b>${data.jdesc}</b></p>
+        <p><u>Required Skills: </u><b>${data.jreq}</b></p>
+        <p><u>Cover Letter: </u><b>${data.coverLetter}</b></p>
+        <button class="delete-btn" onclick="deleteAppliedJob('${data.jid}')">Delete Application</button>
+
+      </div>`;
+
+      console.log(data.jid);
+
+    jobsContainer.appendChild(jobItem);
+  });
+}
+    });
+
+
+    function deleteAppliedJob(mjobId) {
+  const confirmDelete = confirm('Are you sure you want to delete this applied job?');
+  // console.log('i got this id for deletion',mjobId);
+  const delid = mjobId;
+  // console.log('i am sending this',delid);
+
+  if (confirmDelete) {
+    fetch(`/deleteAppliedJob?deljobId=${delid}&memail=${email}`, {
+      method: 'GET',
+      headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+      .then(response => response.json())
+      .then(data => {
+        alert(data); 
+        location.reload();
+      })
+      .catch(error => {
+        console.error('Error deleting job:', error);
+      });
+  }
+  else{
+    alert('Application not Deleted');
+  }
+}
+
+  </script>
+
+  </body>
+  </html>

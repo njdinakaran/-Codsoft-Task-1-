@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CareerConnect-Login</title>
+    <link rel="stylesheet" type="text/css" href="css/loginstyle.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;1,500&family=Roboto:ital,wght@0,300;1,300;1,700&display=swap" rel="stylesheet">
+
+   
+
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">CareerConnect</a>
+
+    </header>
+    <div class="container" id="main">
+        <div class="login-div">
+            <form id="loginForm">
+                <h1>Login</h1><br><br>
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" name="txt" placeholder="Enter your email" required><br>
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" name="txt" placeholder="Enter your password" required><br>
+                <button type="button" onclick="login()">Login</button>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="login-main">
+                    <h1>Welcome back to CareerConnect</h1>
+                    <p>The platform connecting job seekers and employers worldwide!</p>
+                    <br>
+                    <h5>Don't have an account yet?</h5>
+                    <button id="lreg" onclick="movereg()">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        
+        function movereg() {
+            window.location.href = 'newemp.html';
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const result = await response.json();
+            
+            if (response.ok) {
+                if(result.value == 'Candidate'){
+                    window.location.href = `candihomepage.html?email=${result.email}`;
+                }else if(result.value == 'Employee'){
+                    window.location.href = `emphomepage.html?email=${result,email}`;
+                }
+                
+            } else {
+                if (result.error === 'Invalid credentials.') {
+                    alert('Invalid credentials. Please check your Email & password.');
+                } else if (result.error === 'User not verified. Please check your email for verification.') {
+                    alert('User not verified. Please check your email for verification.');
+                } else {
+                    alert('An error occurred. Please try again.');
+        }            }
+        }
+    </script>
+     <script src="https://unpkg.com/scrollreveal"></script>
+     <script src="js/loginscript.js"></script>
+ 
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CareerConnect</title>
+
+    <link rel="stylesheet" type="text/css" href="css/newstyle.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,200;1,500&family=Roboto:ital,wght@0,300;1,300;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    
+</head>
+<body>
+    <header>
+        <a href="#" class="logo">CareerConnect</a>
+        <ul class="navlist">
+            <li><a href="#" class="login" onclick="movepg()">Login</a></li>
+        </ul>
+    </header>
+    <div class="container" id="main">
+        <div class="find-job"> 
+            <form action="/uploadjob" id="uploadForm" method="post" enctype="multipart/form-data">
+                <h1>Find Your Dream Job Now</h1>
+                <label for="fullName">Full Name</label>
+                <input type="text" id="fullName" name="fullName" placeholder="Full Name" required>
+                <label for="email">Email Id</label>
+                <input type="email" id="email" name="email" placeholder="Email Id" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter Your Password" required>
+                <label for="qualification">Highest Qualification</label>
+                <select name="qualification" id="qualification">
+                    <option value="high-school">High School</option>
+                    <option value="associate">Associate's Degree</option>
+                    <option value="bachelor">Bachelor's Degree</option>
+                    <option value="master">Master's Degree</option>
+                    <option value="doctorate">Doctorate</option>
+                </select>
+                <label for="resume">Upload Resume</label>
+                <input type="file" id="resume" accept=".pdf" name="resume" required>
+                <button type="submit">Register</button>
+                <a href="#" class="additional-link" id="postj">Post A Job!</a>   
+            </form>
+        </div>
+
+        <div class="post-job">
+            <form action="/postjob" id="postJobForm" method="post">
+                <h1>Register to Post  a job</h1>
+                <br>
+                <label for="fullName">Full Name</label>
+                <input type="text" name="fullName" id="fullName" placeholder="Full Name" required>
+                <label for="cname">Comapny Name</label>
+                <input type="text" id="cname" name="companyName" placeholder="Company Name" required>
+                <label for="email">Email Id</label>
+                <input type="email" id="email" name="email" placeholder="Email Id" required>
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter Your Password" required>
+                <label for="cpassword">Confirm Password</label>
+                <input type="password" id="cpassword" name="cpassword" placeholder="Confirm Password" required>
+                <button type="submit">Register</button>
+                <a href="#" class="additional-link" id="findj">Find Jobs!</a>
+<br>
+            </form>
+        </div>
+
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-left">
+                    <h1>Welcome To CareerConnect</h1>
+                    <p>Find the latest job openings and career advice on CareerConnect.</p>
+                    <br>
+                    <h6>Have an Account?</h6>
+                    <button id="llogin" onclick="movepg()">Login</button>
+                </div>
+                <div class="overlay-right">
+                    <h1>Welcome to CareerConnect</h1>
+                    <p>Experience the power of our innovative recruitment solutions and find the talent you need to drive your business forward</p>
+                    <h5>Have an Account?</h5>
+                    <button id="rlogin" onclick="movepg()">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+  const user = urlParams.get('user');
+  console.log(`who is logged in??`,user);
+
+  if(user === 'candidate'){
+      main.classList.add("right-panel-active");
+  }
+  </script>
+
+    <script>
+        const findbutton = document.getElementById('findj');
+    const postbutton = document.getElementById('postj');
+    const main = document.getElementById('main');
+
+    findbutton.addEventListener('click', (e) => {
+        e.preventDefault();
+        main.classList.add("right-panel-active");
+    });
+    postbutton.addEventListener('click', (e) => {
+        e.preventDefault();
+        main.classList.remove("right-panel-active");
+    });
+
+    function movepg(){
+        window.location.href = 'loginpg.html';
+    }   
+</script>
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(this);
+        fetch('/uploadjob', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text()) 
+        .then(message => {
+            alert(message);
+            window.location.href = 'loginpg.html';
+        })
+        .catch(error => {
+            console.error('Error submitting form:', error);
+            alert('Error submitting form. Please try again.');
+        });
+    });
+</script>
+<script src="https://unpkg.com/scrollreveal"></script>
+<script src="js/newscript.js"></script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const postJobForm = document.getElementById('postJobForm');
+
+    
+  
+      postJobForm.addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const password = postJobForm.querySelector('#password').value;
+      const confirmPassword = postJobForm.querySelector('#cpassword').value;
+
+      if (password !== confirmPassword) {
+        alert('Password and Confirm Password must match.');
+        return;
+      }
+  
+        const formData = new FormData(postJobForm);
+  
+        try {
+          const response = await fetch('/postjob', {
+            method: 'POST',
+            body: formData,
+          });
+  
+          if (response.ok) {
+            const result = await response.text();
+            alert(result); 
+            window.location.href = 'loginpg.html';
+          } else {
+            const error = await response.text();
+            alert(`Error: ${error}`);
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('An unexpected error occurred.');
+        }
+      });
+    });
+  </script>
+  
+
+</body> 
+</html>
